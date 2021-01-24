@@ -2,11 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My first extension</title>
+    <link rel="stylesheet" href="styles/styles.css">
 </head>
 <body>
-    <button class="btn">Select</button>
+    <div id="pdf-found-div">
+        <h1 class="text-center position-absolute top-0 start-50 translate-middle-x">PDF found</h1>
+        <button id="cut-btn" type="button" class="btn btn-outline-primary position-absolute bottom-0 start-50 translate-middle-x">
+            Cut highlighted
+        </button>
+    </div>
+    <div id="pdf-not-found-div">
+        <h1 class="text-center position-absolute top-50 start-50 translate-middle">Oops, no PDF file found &#128547;</h1>
+    </div>
+
+    
     <script src="./js/popup.js"></script>
 </body>
 </html>

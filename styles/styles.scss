@@ -1,0 +1,34 @@
+
+$theme-colors: (
+    "primary": #0ACDFF,
+    "danger": #ff4136,
+
+);
+
+$popup-height: 100px;
+$popup-width: 200px;
+
+html {
+    width: $popup-width;
+    height: $popup-height;
+}
+
+body {
+    height: $popup-height;
+    width: $popup-width;
+    background-color: #FBDCE2;
+}
+
+/*
+.btn {
+
+}
+
+cut-btn {
+
+}
+
+show-btn {
+
+}
+*/
