@@ -17,24 +17,28 @@ const showScreen = (message) => {
 }
 
 const startLoading = () => {
-    const loadingBar = document.createElement("div");
-    loadingBar.innerHTML = `span class="visually-hidden">Loading...</span>`;
-    loadingBar.setAttribute('id', "loading-bar");
-    loadingBar.setAttribute('class', "spinner-border");
-    loadingBar.setAttribute("role", "status");
-    document.body.appendChild(loadingBar);
+    document.querySelector("#loading-screen").style.display = "inline"; // show loading screen
+    document.querySelector("#cut-btn").classList.add("disabled"); // disable button
 }
 
 const endLoading = () => {
-    const loadingBar = document.querySelector("#loading-bar");
-    loadingBar?.remove();
+    document.querySelector("#loading-screen").style.display = "none"; // show loading screen
+    document.querySelector("#cut-btn").classList.remove("disabled"); // disable button
 }
 
 
 chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
     const port = chrome.tabs.connect(tabs[0].id, {name: "connection"});
-    port.postMessage({});
+    port.postMessage({"state":"init"});
     port.onMessage.addListener((message) => {
-      showScreen(message);
+        console.log(message);
+        if(message["pdf"])
+            showScreen(message);
+    });
+
+    document.querySelector("#cut-btn").addEventListener("click", () => {
+        port.postMessage({"state":"start"})
+        startLoading();
+        port.onMessage.addListener((message) => {if(message["state"] == "done") endLoading();});
     });
 });
