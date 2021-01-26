@@ -8,6 +8,15 @@
     <link rel="stylesheet" href="styles/styles.css">
 </head>
 <body>
+
+    <div id="loading-screen">
+        <div class="loading-animation position-absolute top-50 start-50 translate-middle">
+            <span class="spinner spinner-grow" role="status"></span>
+            <div><strong>Loading...</strong></div>
+        </div>
+        <div id="overlay"></div>
+    </div>
+
     <div id="pdf-found-div">
         <h1 class="text-center position-absolute top-50 start-50 translate-middle">PDF found</h1>
         <button id="cut-btn" type="button" class="btn btn-outline-primary position-absolute bottom-0 start-50 translate-middle-x">
