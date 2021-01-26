@@ -1,14 +1,13 @@
-const buttonClicked = (message) => {
-    chrome.tabs.query({currentWindow: true, active: true}, (tabs) => {
-        chrome.tabs.sendMessage(tabs[0].id, message);
-    });
+const processTitle = (title) => {
+    return title.split("/").pop().replace("%20", " ");
 }
 
-const showScreen = (state, name) => {
+const showScreen = (message) => {
     const pdfFoundElem = document.querySelector("#pdf-found-div");
     const pdfNotFoundElem = document.querySelector("#pdf-not-found-div");
-    if(state) {
-        pdfFoundElem.querySelector(".text-center").textContent = `PDF ${name} found`;
+    if(message["pdf"]) {
+        const title = processTitle(message["title"]);
+        pdfFoundElem.querySelector(".text-center").textContent = `PDF ${title} found`;
         pdfFoundElem.style.display = "inline";
         pdfNotFoundElem.style.display = "none";
     } else {
@@ -23,6 +22,7 @@ const startLoading = () => {
     loadingBar.setAttribute('id', "loading-bar");
     loadingBar.setAttribute('class', "spinner-border");
     loadingBar.setAttribute("role", "status");
+    document.body.appendChild(loadingBar);
 }
 
 const endLoading = () => {
@@ -30,11 +30,11 @@ const endLoading = () => {
     loadingBar?.remove();
 }
 
-const gotMessage = (message, sender, sendResponse) => {
-    showScreen(message["pdf"], message["title"]); // switches between screens
-    document.querySelector('button').addEventListener('click', buttonClicked.bind(this, message));
-    startLoading();
-    sendResponse({submit: true});
-}
-showScreen(false);
-chrome.runtime.onMessage.addListener(gotMessage);
+
+chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+    const port = chrome.tabs.connect(tabs[0].id, {name: "connection"});
+    port.postMessage({});
+    port.onMessage.addListener((message) => {
+      showScreen(message);
+    });
+});
