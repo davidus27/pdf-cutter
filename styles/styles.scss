@@ -17,12 +17,49 @@ body {
     height: $popup-height;
     width: $popup-width;
     background-color: #FBDCE2;
+
+    #pdf-found-div {
+        display: none;
+    }
 }
 
-#pdf-found-div {
+
+#loading-screen {
     display: none;
+
+    .loading-animation {
+        z-index: 2;
+    }
+    
+    .spinner {
+        height: 3rem;
+        width: 3rem;
+    }
+
+    #overlay {
+        position: fixed; 
+        width: 100%;
+        height: 100%;
+        padding:0;
+        margin:0;
+        top:0;
+        left:0;
+        background-color: rgba(255,255,255,0.9);
+        z-index: 1;
+        cursor:wait;
+    }
 }
 
+
+
+
+
+
+
+
+
+
+  
 /*
 .btn {
 
