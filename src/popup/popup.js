@@ -1,13 +1,9 @@
-const processTitle = (title) => {
-    return title.split("/").pop().replace("%20", " ");
-}
 
 const showScreen = (message) => {
     const pdfFoundElem = document.querySelector("#pdf-found-div");
     const pdfNotFoundElem = document.querySelector("#pdf-not-found-div");
     if(message["pdf"]) {
-        const title = processTitle(message["title"]);
-        pdfFoundElem.querySelector(".text-center").textContent = `PDF ${title} found`;
+        pdfFoundElem.querySelector(".text-center").textContent = `PDF ${message["title"]} found`;
         pdfFoundElem.style.display = "inline";
         pdfNotFoundElem.style.display = "none";
     } else {
@@ -31,7 +27,7 @@ chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
     const port = chrome.tabs.connect(tabs[0].id, {name: "connection"});
     port.postMessage({"state":"init"});
     port.onMessage.addListener((message) => {
-        console.log(message);
+        //console.log(message);
         if(message["pdf"])
             showScreen(message);
     });
