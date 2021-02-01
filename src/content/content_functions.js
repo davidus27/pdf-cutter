@@ -51,15 +51,11 @@ class DocumentCutter {
     }
     
     removeExtraPages() {
-        /* TODO: This is not actually removing pages */
-        console.log(this.foundPages);
-        for(let pageIndex = 0; pageIndex < this.pdfDoc.getPageCount(); pageIndex++) {
+        for(let pageIndex = this.pdfDoc.getPageCount() - 1; pageIndex >= 0; pageIndex--) {
             if(!this.foundPages[pageIndex]) {
-                console.log("Removed page", pageIndex);
                 this.pdfDoc.removePage(pageIndex);
             }
         }
-        console.log("Page count:", this.pdfDoc.getPageCount());
         return this;
     }
 }
