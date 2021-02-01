@@ -15,7 +15,7 @@
                 "file://*/*"
               ],
             "js": [
-                "./dist/index.bundle.js",
+                "./dist/main.js"
             ]
         }
     ],
