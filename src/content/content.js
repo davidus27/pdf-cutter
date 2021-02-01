@@ -1,12 +1,13 @@
 import * as contentFunctions from './content_functions.js'
 
 const addChromeListener = (callbackMessageSent) => {
-    console.log("Done");
     chrome.runtime.onConnect.addListener((port) => {
         port.onMessage.addListener((message) => {
             if(message["state"] == "start" && contentFunctions.isPDF()) {
-                callbackMessageSent();
-                port.postMessage({"state":"done"});
+                callbackMessageSent().then((messageSent) => {
+                    const message = messageSent ? {"state":"done"} : {"state":"noPageFound"};
+                    port.postMessage(message);
+                });    
             }
             else {
                 const title = contentFunctions.processTitle(window.location.href);
@@ -21,9 +22,9 @@ creator.initialize()
     .then(() => {
         addChromeListener(() => {
             creator.findPages().removeExtraPages();
-            creator.createNewPDF();
+            return creator.createNewPDF();
         });
     })
     .catch((err) => {
-        console.log(err)
+        console.log(err);
     })
