@@ -27,7 +27,6 @@ chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
     const port = chrome.tabs.connect(tabs[0].id, {name: "connection"});
     port.postMessage({"state":"init"});
     port.onMessage.addListener((message) => {
-        //console.log(message);
         if(message["pdf"])
             showScreen(message);
     });
