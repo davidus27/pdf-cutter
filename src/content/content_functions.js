@@ -1,65 +1,88 @@
-import { console } from 'globalthis/implementation';
-
+import { PDFDocument, PDFName} from 'pdf-lib';
 
 const isPDF = () => {
     // if window contains one of this it is probably a pdf file
     return Boolean(window.MimeTypes || window.PdfNavigator || window.location.href.match(/\.pdf/i));
 }
 
-const processDocument = async (pdf, callbackProcessPage = processPage) => {
-    const pageAmount = pdf._pdfInfo.numPages;
-    let currentPage;
-    let highlightedPages = [];
+const processTitle = (title) => {
+    return title.split("/").pop().replace("%20", " ");
+}
 
-    for(let currentPageIndex = 1; currentPageIndex <= pageAmount; currentPageIndex++) {
-        currentPage = pdf.getPage(currentPageIndex);
-        await currentPage
-            .then((page) => {
-                const hValue = callbackProcessPage(page);
-                console.log("Return value:", hValue);
-                if(hValue) {
-                    highlightedPages.push(currentPage);
-                }
-            })
-            .catch((err) => console.log(err));
+class DocumentCutter {
+    constructor(url) {
+        this.url = url;
+        this.pdfDoc = null;
+        this.foundPages = {};
     }
-    return highlightedPages;
-}
 
-const processPage = async (page) => { 
-    // returns boolean if currentPage contains highlighted content
-    await page.getAnnotations()
-        .then((pageAnnotations) => {
-            // finds if at least one anotation on page is the Highlight
-            //console.log("Page: ", page._pageIndex,pageAnnotations.filter(annotation => annotation.subtype === "Highlight"));
-            return pageAnnotations.filter(annotation => annotation.subtype === "Highlight");
-            //console.log("Page num.", currentPageIndex, pageAnnotation.subtype, pageAnnotation);
-            //if(pageAnnotation.subtype == "Highlight") {
-        })
-        .catch((err) => {
-            console.log("There is a problem with annotation:", err)
-            return false;
+    async initialize() {
+        const arrayBuffer = await fetch(this.url).then(res => res.arrayBuffer())
+        this.pdfDoc = await PDFDocument.load(arrayBuffer);
+        return this;
+    }
+
+    static satisifiesRules(references) { 
+        // gets Map object of references 
+        // returns boolean value if that 
+        // page does contain highlighted elements
+        return references.get(PDFName.of("Subtype")) === PDFName.of("Highlight");
+    }
+
+    findPages() {
+        if(!this.pdfDoc) return this;
+        const documentReferenceObjects = this.pdfDoc.context.indirectObjects;
+        this.pdfDoc.getPages().forEach((page, pageIndex) => {
+            for(let annotation of page.node.Annots().array) { // possible undefined problem
+                if(DocumentCutter.satisifiesRules(documentReferenceObjects.get(annotation))) {
+                    this.foundPages[pageIndex] = true;
+                    break;
+                }
+            }
+            /*
+            page.node.Annots().array.forEach((annotation) => {
+                if(DocumentCutter.satisifiesRules(documentReferenceObjects.get(annotation))) {
+                    this.foundPages.push(pageIndex);
+                }
+            });
+            */
         });
+        return this;
+    }
+    
+    removeExtraPages() {
+        /* TODO: This is not actually removing pages */
+        console.log(this.foundPages);
+        for(let pageIndex = 0; pageIndex < this.pdfDoc.getPageCount(); pageIndex++) {
+            if(!this.foundPages[pageIndex]) {
+                console.log("Removed page", pageIndex);
+                this.pdfDoc.removePage(pageIndex);
+            }
+        }
+        console.log("Page count:", this.pdfDoc.getPageCount());
+        return this;
+    }
+}
+
+class NewDocumentCreator extends DocumentCutter {
+    constructor(url) {
+        super(url);
+    }
+
+    static download(content, mimeType, filename) {
+        const a = document.createElement('a')
+        const blob = new Blob([content], {type: mimeType})
+        const url = URL.createObjectURL(blob)
+        a.setAttribute('href', url)
+        a.setAttribute('download', filename)
+        a.click()
+    }
+    
+    async createNewPDF(fileName=`New_${processTitle(this.url)}`) {
+        const pdfBytes = await this.pdfDoc.save();
+        NewDocumentCreator.download(pdfBytes, "pdf/application", fileName);
+    }
 }
 
 
-const onFinishDocument = () => {
-    // what you want to do after document is processed
-}
-
-const processPDF = async (documentPromise, callbackProcessDocument = processDocument, callbackAllDone = onFinishDocument) => {
-    // work with the pdf content
-    let highlightedPages;
-    documentPromise
-        .then(async (pdf) => {
-            highlightedPages = await callbackProcessDocument(pdf);
-            console.log(highlightedPages);
-            })
-        .catch((err) => {
-            console.log("error: ", err);
-        });
-    callbackAllDone();
-}
-
-
-export {isPDF, processPDF};
+export {isPDF, processTitle, NewDocumentCreator};
