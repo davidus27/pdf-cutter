@@ -1,11 +1,11 @@
 
-const showScreen = (message) => {
+const showScreen = (isPDF, title) => {
     document.querySelector("#loading-screen").style.display = "none";
 
     const pdfFoundElem = document.querySelector("#pdf-found-div");
     const pdfNotFoundElem = document.querySelector("#pdf-not-found-div");
-    if(message["pdf"]) {
-        pdfFoundElem.querySelector(".text-center").textContent = `PDF ${message["title"]} found`;
+    if(isPDF) {
+        pdfFoundElem.querySelector(".text-center").textContent = `PDF ${title} found`;
         pdfFoundElem.style.display = "inline";
         pdfNotFoundElem.style.display = "none";
     } else {
@@ -32,20 +32,16 @@ const showPageNotFound = (title) => {
 chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
     const port = chrome.tabs.connect(tabs[0].id, {name: "connection"});
     let pageTitle;
-    port.postMessage({"state":"init"});
+    port.postMessage({"state":"init", "pdf":true});
     port.onMessage.addListener((message) => {
-        if(message["pdf"]) {
-            pageTitle = message["title"];
-            showScreen(message);
-        }
+        if(message["title"]) pageTitle = message["title"];
+        endLoading();
+        showScreen(message["pdf"], pageTitle);
+        if(message["state"] === "noPageFound") { showPageNotFound(pageTitle);}
     });
 
     document.querySelector("#cut-btn").addEventListener("click", () => {
-        port.postMessage({"state":"start"})
+        port.postMessage({"state":"start", "pdf":true})
         startLoading();
-        port.onMessage.addListener((message) => {
-            endLoading();
-            if(message["state"] == "noPageFound") showPageNotFound(pageTitle);
-        });
     });
 });
