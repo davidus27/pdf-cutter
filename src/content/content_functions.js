@@ -33,19 +33,13 @@ class DocumentCutter {
         if(!this.pdfDoc) return this;
         const documentReferenceObjects = this.pdfDoc.context.indirectObjects;
         this.pdfDoc.getPages().forEach((page, pageIndex) => {
-            for(let annotation of page.node.Annots().array) { // possible undefined problem
+            if(!page.node.Annots()?.array) return;
+            for(let annotation of page.node.Annots().array) {
                 if(DocumentCutter.satisifiesRules(documentReferenceObjects.get(annotation))) {
                     this.foundPages[pageIndex] = true;
                     break;
                 }
             }
-            /*
-            page.node.Annots().array.forEach((annotation) => {
-                if(DocumentCutter.satisifiesRules(documentReferenceObjects.get(annotation))) {
-                    this.foundPages.push(pageIndex);
-                }
-            });
-            */
         });
         return this;
     }
@@ -75,8 +69,10 @@ class NewDocumentCreator extends DocumentCutter {
     }
     
     async createNewPDF(fileName=`New_${processTitle(this.url)}`) {
+        if(!this.pdfDoc.getPageCount()) return false;
         const pdfBytes = await this.pdfDoc.save();
         NewDocumentCreator.download(pdfBytes, "pdf/application", fileName);
+        return true;
     }
 }
 
