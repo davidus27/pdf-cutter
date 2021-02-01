@@ -21,12 +21,14 @@ body {
     #pdf-found-div {
         display: none;
     }
+    
+    #pdf-not-found-div {
+        display: none;
+    }
 }
 
 
 #loading-screen {
-    display: none;
-
     .loading-animation {
         z-index: 2;
     }
