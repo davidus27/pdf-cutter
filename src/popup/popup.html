@@ -10,7 +10,7 @@
 <body>
 
     <div id="loading-screen">
-        <div class="loading-animation position-absolute top-50 start-50 translate-middle">
+        <div class="loading-animation text-center position-absolute top-50 start-50 translate-middle">
             <span class="spinner spinner-grow" role="status"></span>
             <div><strong id="loading-txt">Processing PDF file, please wait...</strong></div>
         </div>
@@ -18,13 +18,19 @@
     </div>
 
     <div id="pdf-found-div">
-        <h1 class="text-center position-absolute top-50 start-50 translate-middle">PDF found</h1>
-        <button id="cut-btn" type="button" class="btn btn-outline-primary position-absolute bottom-0 start-50 translate-middle-x">
-            Cut highlighted
-        </button>
+        <div class="position-absolute top-0 start-50 translate-middle-x">
+            <h1 class="text-center display-5">PDF found</h1>
+        </div>
+        <div class="position-absolute bottom-0 start-50 translate-middle-x">
+            <button id="cut-btn" type="button" class="btn btn-outline-primary">
+                Cut highlighted
+            </button>
+        </div>
     </div>
     <div id="pdf-not-found-div">
-        <h1 class="text-center position-absolute top-50 start-50 translate-middle">Oops, no PDF file found &#128547;</h1>
+        <div class="position-absolute top-0 start-50 translate-middle-x">
+            <h1 class="text-center">Oops, no PDF file found &#128547;</h1>
+        </div>
     </div>
 
     
