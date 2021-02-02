@@ -17,8 +17,14 @@ class DocumentCutter {
     }
 
     async initialize() {
-        const arrayBuffer = await fetch(this.url).then(res => res.arrayBuffer())
-        this.pdfDoc = await PDFDocument.load(arrayBuffer);
+        if(!/file:\/\//i.test(this.url)) {
+            const arrayBuffer = await fetch(this.url).then(res => res.arrayBuffer());
+            this.pdfDoc = await PDFDocument.load(arrayBuffer)
+            return this;
+        }
+        const arrayBuffer = await fetch(this.url).then(res => res.arrayBuffer());
+        const uint8 = new Uint8Array(arrayBuffer);
+        this.pdfDoc = await PDFDocument.load(uint8);
         return this;
     }
 
