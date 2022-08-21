@@ -1,6 +1,6 @@
-# PDF Cutter
+# PDF Shortener Extension
 
-PDF Cutter is an easy-to-use Chrome extension. It detects a PDF file opened in a browser and creates a new one containing only pages with highlighted text. PDF extension does not contain server-side and doesn't require any internet connection. 
+PDF Shortener is an easy-to-use Chrome extension. It detects a PDF file opened in a browser and creates a new one containing only pages with highlighted text. PDF extension does not contain server-side and doesn't require any internet connection. 
 ## Building
 Install all the necessary libraries: 
 ``
